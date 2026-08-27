@@ -346,7 +346,45 @@ h1, h2, h3, h4 { color: var(--ink); font-weight: 700; line-height: 1.45; }
 .value-item p { font-size: .92rem; color: var(--muted); }
 
 /* ---------- مكتبة الحوكمة ---------- */
+/* شريط البحث وعدّاد النتائج */
+.doc-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 18px; flex-wrap: wrap; margin-bottom: 22px;
+}
+.doc-search {
+  position: relative; flex: 1 1 340px; max-width: 460px;
+  display: flex; align-items: center;
+}
+.doc-search__icon {
+  position: absolute; inset-inline-start: 16px; display: flex;
+  color: var(--muted); pointer-events: none;
+}
+.doc-search__icon svg { width: 19px; height: 19px; }
+.doc-search input {
+  font: inherit; width: 100%; padding: 13px 48px 13px 18px;
+  border: 1.5px solid var(--line); border-radius: 100px;
+  background: #fff; color: var(--ink);
+  transition: border-color .18s, box-shadow .18s;
+}
+.doc-search input::placeholder { color: var(--muted); }
+.doc-search input:focus {
+  outline: none; border-color: var(--teal); box-shadow: 0 0 0 4px rgba(49,194,147,.14);
+}
+.doc-search input::-webkit-search-cancel-button { cursor: pointer; }
+.doc-count { font-size: .9rem; color: var(--muted); margin: 0; }
+.doc-count strong { color: var(--ink); font-weight: 700; }
+
+.doc-empty {
+  display: none; flex-direction: column; align-items: center; gap: 12px;
+  text-align: center; color: var(--muted); font-size: 1rem;
+  padding: 64px 24px; background: #fff;
+  border: 1.5px dashed var(--line); border-radius: var(--radius);
+}
+.doc-empty svg { width: 40px; height: 40px; color: var(--teal); opacity: .7; }
+.doc-empty.is-shown { display: flex; }
+
 .filter-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 36px; justify-content: center; }
+.doc-toolbar + .filter-tabs { justify-content: flex-start; }
 .filter-tab {
   font: inherit; font-size: .92rem; font-weight: 500; cursor: pointer;
   padding: 9px 20px; border-radius: 100px; border: 1.5px solid var(--line);
@@ -598,6 +636,11 @@ h1, h2, h3, h4 { color: var(--ink); font-weight: 700; line-height: 1.45; }
   font-size: .82rem;
 }
 
+/* أدوات الفلترة تعمل بـ JavaScript فقط — تُخفى بدونه وتظهر كل الوثائق */
+.doc-toolbar, .filter-tabs { display: none; }
+.js .doc-toolbar { display: flex; }
+.js .filter-tabs { display: flex; }
+
 /* ---------- حركات الظهور (تُفعّل فقط عند توفر JavaScript) ---------- */
 .js .reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s ease; }
 .js .reveal.is-visible { opacity: 1; transform: none; }
@@ -644,6 +687,9 @@ h1, h2, h3, h4 { color: var(--ink); font-weight: 700; line-height: 1.45; }
   .brand img { height: 42px; }
 
   .grid--2, .grid--3, .grid--4, .doc-grid, .board-grid, .contact-grid { grid-template-columns: 1fr; }
+  .doc-toolbar { flex-direction: column; align-items: stretch; gap: 12px; }
+  .doc-search { max-width: none; }
+  .doc-count { text-align: center; }
   .stats__grid { grid-template-columns: 1fr 1fr; }
   .donate-box { grid-template-columns: 1fr; text-align: center; }
   .iban-row { justify-content: center; }
