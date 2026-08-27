@@ -94,20 +94,64 @@
     counters.forEach(function (el) { el.textContent = el.getAttribute('data-count'); });
   }
 
-  /* ---------- فلترة المستندات ---------- */
+  /* ---------- فلترة المستندات والبحث فيها ---------- */
   var tabs = document.querySelectorAll('.filter-tab');
   var docs = document.querySelectorAll('.doc-card');
+  var search = document.getElementById('doc-search');
+  var shownEl = document.getElementById('doc-shown');
+  var emptyEl = document.getElementById('doc-empty');
+  var activeCat = 'all';
+
+  // تطبيع النص العربي: إزالة التشكيل وتوحيد الهمزات والتاء المربوطة
+  function normalize(s) {
+    return s
+      .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+      .replace(/[\u0622\u0623\u0625\u0671]/g, '\u0627')
+      .replace(/\u0629/g, '\u0647')
+      .replace(/[\u0649\u064A]/g, '\u064A')
+      .toLowerCase()
+      .trim();
+  }
+
+  function applyFilters() {
+    var term = search ? normalize(search.value) : '';
+    var shown = 0;
+    docs.forEach(function (card) {
+      var matchCat = activeCat === 'all' || card.getAttribute('data-category') === activeCat;
+      var title = normalize(card.getAttribute('data-title') || card.textContent);
+      var matchTerm = !term || title.indexOf(term) !== -1;
+      var show = matchCat && matchTerm;
+      card.classList.toggle('is-hidden', !show);
+      if (show) shown++;
+    });
+    if (shownEl) shownEl.textContent = shown;
+    if (emptyEl) {
+      emptyEl.classList.toggle('is-shown', shown === 0);
+      emptyEl.hidden = shown !== 0;
+    }
+  }
+
   tabs.forEach(function (tab) {
     tab.addEventListener('click', function () {
       tabs.forEach(function (t) { t.classList.remove('is-active'); });
       tab.classList.add('is-active');
-      var cat = tab.getAttribute('data-filter');
-      docs.forEach(function (card) {
-        var show = cat === 'all' || card.getAttribute('data-category') === cat;
-        card.classList.toggle('is-hidden', !show);
-      });
+      activeCat = tab.getAttribute('data-filter');
+      applyFilters();
     });
   });
+
+  if (search) {
+    search.addEventListener('input', applyFilters);
+    // Esc يمسح البحث
+    search.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && search.value) {
+        search.value = '';
+        applyFilters();
+      }
+    });
+  }
+
+  if (docs.length) applyFilters();
 
   /* ---------- عارض PDF المنبثق ---------- */
   var modal = document.getElementById('pdf-modal');
